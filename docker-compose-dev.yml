@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  backend:
+  web:
     image: python:3.10
     build:
       context: ./fashion_shopping_backend
@@ -9,10 +9,13 @@ services:
     env_file:
       - ./fashion_shopping_backend/.env.dev
     volumes:
-      - ./fashion_shopping_backend:/app/backend
+      - ./fashion_shopping_backend:/app/web
+      - ./fashion_shopping_backend/media/:/app/web/media/
+      - static:/app/web/static/
+      - media:/app/web/media/
     ports:
       - 9999:9999
-    entrypoint: sh entrypoint.sh
+    # entrypoint: sh entrypoint.sh
     command: python3 manage.py debug
     depends_on:
       - db
@@ -21,6 +24,9 @@ services:
   celery_worker:
     build:
       context: ./fashion_shopping_backend
+    volumes:
+      - static:/app/web/static/
+      - media:/app/web/media/
     command: celery -A fashion_shopping_backend.celery worker -l info
     depends_on:
       - redis
@@ -28,24 +34,36 @@ services:
   celery_beat:
     build:
       context: ./fashion_shopping_backend
+    volumes:
+      - static:/app/web/static/
+      - media:/app/web/media/
     command: celery -A fashion_shopping_backend.celery beat -l info
     depends_on:
       - redis
 
-  # image_search:
-  #   image: python:3.8
-  #   build:
-  #     context: ./fashion_shopping_image_search
-  #   # restart: always
-  #   command: python3 api.py
-  #   depends_on:
-  #     - db
+  image_search:
+    image: python:3.8
+    build:
+      context: ./fashion_shopping_image_search
+    volumes:
+      - ./fashion_shopping_image_search/:/app/image_search/
+    # restart: always
+    command: python3 api.py --reload
+    depends_on:
+      - db
+
+  chatbot:
+    image: python:3.10
+    build:
+      context: ./fashion_shopping_chatbot
+    # restart: always
+    command: rasa run --cors '*'
 
   db:
     image: postgres:15.1
     restart: always
     volumes:
-      - ./database/data:/var/lib/postgresql/data
+      - ./database/data/:/var/lib/postgresql/data/
     env_file:
       - ./database/.env
     ports:
@@ -55,13 +73,17 @@ services:
     image: nginx:1.23
     build:
       context: ./nginx
+    volumes:
+      - static:/static/
+      - media:/media/
     ports:
       - 8000:8080
     depends_on:
-      - backend
+      - web
 
   redis:
     image: redis:7.0
 
 volumes:
-  data:
+  static:
+  media:
