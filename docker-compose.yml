@@ -47,12 +47,19 @@ services:
     depends_on:
       - db
 
-  # chatbot:
-  #   image: python:3.10
-  #   build:
-  #     context: ./fashion_shopping_chatbot
-  #   # restart: always
-  #   command: rasa run --cors '*'
+  chatbot:
+    image: rasa/rasa:3.4.2-full
+    build:
+      context: ./fashion_shopping_chatbot
+    # restart: always
+    env_file:
+      - ./fashion_shopping_chatbot/.env
+    command: rasa run
+
+  rasa_actions:
+    build:
+      context: ./fashion_shopping_chatbot
+    command: rasa run actions
 
   db:
     image: postgres:15.1
@@ -72,7 +79,8 @@ services:
       - static:/static/
       - media:/media/
     ports:
-      - 8000:8080
+      - 8000:8000
+      - 5005:5005
     depends_on:
       - web
 
