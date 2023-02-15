@@ -54,12 +54,12 @@ services:
     # restart: always
     env_file:
       - ./fashion_shopping_chatbot/.env
-    command: rasa run
+    command: run
 
   rasa_actions:
     build:
       context: ./fashion_shopping_chatbot
-    command: rasa run actions
+    command: run actions
 
   db:
     image: postgres:15.1

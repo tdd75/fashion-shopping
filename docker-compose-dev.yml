@@ -15,31 +15,31 @@ services:
       - media:/app/web/media/
     ports:
       - 9999:9999
-    # entrypoint: sh entrypoint.sh
+    entrypoint: sh entrypoint.sh
     command: python3 manage.py debug
     depends_on:
       - db
       - redis
 
-  # celery_worker:
-  #   build:
-  #     context: ./fashion_shopping_backend
-  #   volumes:
-  #     - static:/app/web/static/
-  #     - media:/app/web/media/
-  #   command: celery -A fashion_shopping_backend.celery worker -l info
-  #   depends_on:
-  #     - redis
+  celery_worker:
+    build:
+      context: ./fashion_shopping_backend
+    volumes:
+      - static:/app/web/static/
+      - media:/app/web/media/
+    command: celery -A fashion_shopping_backend.celery worker -l info
+    depends_on:
+      - redis
 
-  # celery_beat:
-  #   build:
-  #     context: ./fashion_shopping_backend
-  #   volumes:
-  #     - static:/app/web/static/
-  #     - media:/app/web/media/
-  #   command: celery -A fashion_shopping_backend.celery beat -l info
-  #   depends_on:
-  #     - redis
+  celery_beat:
+    build:
+      context: ./fashion_shopping_backend
+    volumes:
+      - static:/app/web/static/
+      - media:/app/web/media/
+    command: celery -A fashion_shopping_backend.celery beat -l info
+    depends_on:
+      - redis
 
   # image_search:
   #   image: python:3.8
@@ -52,19 +52,19 @@ services:
   #   depends_on:
   #     - db
 
-  # chatbot:
-  #   image: rasa/rasa:3.4.2-full
-  #   build:
-  #     context: ./fashion_shopping_chatbot
-  #   # restart: always
-  #   env_file:
-  #     - ./fashion_shopping_chatbot/.env
-  #   command: rasa run
+  chatbot:
+    image: rasa/rasa:3.4.2-full
+    build:
+      context: ./fashion_shopping_chatbot
+    # restart: always
+    env_file:
+      - ./fashion_shopping_chatbot/.env
+    command: run
 
-  # rasa_actions:
-  #   build:
-  #     context: ./fashion_shopping_chatbot
-  #   command: rasa run actions
+  rasa_actions:
+    build:
+      context: ./fashion_shopping_chatbot
+    command: run actions
 
   db:
     image: postgres:15.1
@@ -84,7 +84,8 @@ services:
       - static:/static/
       - media:/media/
     ports:
-      - 8000:8080
+      - 8000:8000
+      - 5005:5005
     depends_on:
       - web
 
