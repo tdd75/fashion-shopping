@@ -6,9 +6,8 @@ services:
     build:
       context: ./fashion_shopping_backend
     restart: always
-    env_file:
-      - ./fashion_shopping_backend/.env
     volumes:
+      - ./fashion_shopping_backend/:/app/web/
       - ./fashion_shopping_backend/media/:/app/web/media/
       - static:/app/web/static/
       - media:/app/web/media/
@@ -22,6 +21,7 @@ services:
     build:
       context: ./fashion_shopping_backend
     volumes:
+      - ./fashion_shopping_backend/:/app/web/
       - static:/app/web/static/
       - media:/app/web/media/
     command: celery -A fashion_shopping_backend.celery worker -l info
@@ -32,6 +32,7 @@ services:
     build:
       context: ./fashion_shopping_backend
     volumes:
+      - ./fashion_shopping_backend/:/app/web/
       - static:/app/web/static/
       - media:/app/web/media/
     command: celery -A fashion_shopping_backend.celery beat -l info
@@ -42,6 +43,9 @@ services:
     image: python:3.8
     build:
       context: ./fashion_shopping_image_search
+    volumes:
+      - ./fashion_shopping_image_search/:/app/image_search/
+      - media:/media/
     # restart: always
     command: python3 api.py
     depends_on:
@@ -51,6 +55,8 @@ services:
     image: rasa/rasa:3.4.2-full
     build:
       context: ./fashion_shopping_chatbot
+    volumes:
+      - ./fashion_shopping_chatbot/:/app/chatbot/
     # restart: always
     env_file:
       - ./fashion_shopping_chatbot/.env
@@ -59,16 +65,20 @@ services:
   rasa_actions:
     build:
       context: ./fashion_shopping_chatbot
+    volumes:
+      - ./fashion_shopping_chatbot/:/app/chatbot/
+    env_file:
+      - ./fashion_shopping_chatbot/.env
     restart: always
     command: run actions
 
-  fe_admin:
-    image: node:16
-    build:
-      context: ./fashion_shopping_admin
-    env_file:
-      - ./fashion_shopping_admin/.env
-    command: yarn start
+  # fe_admin:
+  #   image: node:16
+  #   build:
+  #     context: ./fashion_shopping_admin
+  #   env_file:
+  #     - ./fashion_shopping_admin/.env
+  #   command: yarn start
 
   db:
     image: postgres:15.1
@@ -90,7 +100,7 @@ services:
     ports:
       - 8000:8000
       - 5005:5005
-      - 3000:3000
+      # - 3000:3000
     depends_on:
       - web
 
