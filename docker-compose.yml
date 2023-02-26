@@ -5,6 +5,7 @@ services:
     image: python:3.10
     build:
       context: ./fashion_shopping_backend
+    working_dir: /app/web
     restart: always
     volumes:
       - ./fashion_shopping_backend/:/app/web/
@@ -40,13 +41,16 @@ services:
       - redis
 
   image_search:
-    image: python:3.8
+    image: python:3.10
     build:
       context: ./fashion_shopping_image_search
+    working_dir: /app/image_search
     volumes:
       - ./fashion_shopping_image_search/:/app/image_search/
       - media:/media/
     # restart: always
+    environment:
+      - PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
     command: python3 api.py
     depends_on:
       - db
