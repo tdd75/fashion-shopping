@@ -42,7 +42,7 @@ services:
       - redis
 
   # image_search:
-  #   image: python:3.8
+  #   image: python:3.10
   #   build:
   #     context: ./fashion_shopping_image_search
   #   volumes:
