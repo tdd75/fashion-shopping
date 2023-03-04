@@ -1,7 +1,7 @@
 import os
 
 services = {
-    'fashion_shopping_admin': 'fashion-shopping-admin',
+    # 'fashion_shopping_admin': 'fashion-shopping-admin',
     'fashion_shopping_app': 'fashion-shopping-app',
     'fashion_shopping_backend': 'fashion-shopping-backend',
     'fashion_shopping_chatbot': 'fashion-shopping-chatbot',
