@@ -13,7 +13,23 @@ services:
       - static:/app/web/static/
       - media:/app/web/media/
     entrypoint: sh entrypoint.sh
-    command: python3 manage.py deploy
+    command: python3 manage.py run
+    depends_on:
+      - db
+      - redis
+
+  web_ws:
+    build:
+      dockerfile: Dockerfile_ws
+      context: ./fashion_shopping_backend
+    working_dir: /app/web_ws
+    restart: always
+    volumes:
+      - ./fashion_shopping_backend:/app/web
+      - ./fashion_shopping_backend/media/:/app/web/media/
+      - static:/app/web/static/
+      - media:/app/web/media/
+    command: python3 manage.py run_ws
     depends_on:
       - db
       - redis
@@ -48,7 +64,7 @@ services:
     volumes:
       - ./fashion_shopping_image_search/:/app/image_search/
       - media:/media/
-    # restart: always
+    restart: always
     environment:
       - PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python
     command: python3 api.py
@@ -106,6 +122,7 @@ services:
       - 8001:8001
     depends_on:
       - web
+      - web_ws
 
   redis:
     image: redis:7.0
