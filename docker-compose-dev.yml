@@ -5,6 +5,7 @@ services:
     image: python:3.10
     build:
       context: ./fashion_shopping_backend
+    working_dir: /app/web
     restart: always
     env_file:
       - ./fashion_shopping_backend/.env.dev
@@ -16,35 +17,56 @@ services:
     ports:
       - 9999:9999
     entrypoint: sh entrypoint.sh
-    command: python3 manage.py debug
+    command: python3 manage.py run
     depends_on:
       - db
       - redis
 
-  celery_worker:
+  web_ws:
     build:
+      dockerfile: Dockerfile_ws
       context: ./fashion_shopping_backend
+    working_dir: /app/web_ws
+    restart: always
+    env_file:
+      - ./fashion_shopping_backend/.env.dev
     volumes:
+      - ./fashion_shopping_backend:/app/web
+      - ./fashion_shopping_backend/media/:/app/web/media/
       - static:/app/web/static/
       - media:/app/web/media/
-    command: celery -A fashion_shopping_backend.celery worker -l info
+    ports:
+      - 10000:10000
+    command: python3 manage.py run_ws
     depends_on:
+      - db
       - redis
 
-  celery_beat:
-    build:
-      context: ./fashion_shopping_backend
-    volumes:
-      - static:/app/web/static/
-      - media:/app/web/media/
-    command: celery -A fashion_shopping_backend.celery beat -l info
-    depends_on:
-      - redis
+  # celery_worker:
+  #   build:
+  #     context: ./fashion_shopping_backend
+  #   volumes:
+  #     - static:/app/web/static/
+  #     - media:/app/web/media/
+  #   command: celery -A fashion_shopping_backend.celery worker -l info
+  #   depends_on:
+  #     - redis
+
+  # celery_beat:
+  #   build:
+  #     context: ./fashion_shopping_backend
+  #   volumes:
+  #     - static:/app/web/static/
+  #     - media:/app/web/media/
+  #   command: celery -A fashion_shopping_backend.celery beat -l info
+  #   depends_on:
+  #     - redis
 
   # image_search:
   #   image: python:3.10
   #   build:
   #     context: ./fashion_shopping_image_search
+  #   working_dir: /app/image_search
   #   volumes:
   #     - ./fashion_shopping_image_search/:/app/image_search/
   #   # restart: always
@@ -52,26 +74,26 @@ services:
   #   depends_on:
   #     - db
 
-  chatbot:
-    image: rasa/rasa:3.4.2-full
-    build:
-      context: ./fashion_shopping_chatbot
-    volumes:
-      - ./fashion_shopping_chatbot/:/app/chatbot/
-    # restart: always
-    env_file:
-      - ./fashion_shopping_chatbot/.env
-    command: run --cors "*"
+  # chatbot:
+  #   image: rasa/rasa:3.4.2-full
+  #   build:
+  #     context: ./fashion_shopping_chatbot
+  #   volumes:
+  #     - ./fashion_shopping_chatbot/:/app/chatbot/
+  #   # restart: always
+  #   env_file:
+  #     - ./fashion_shopping_chatbot/.env
+  #   command: run --cors "*"
 
-  rasa_actions:
-    build:
-      context: ./fashion_shopping_chatbot
-    volumes:
-      - ./fashion_shopping_chatbot/:/app/chatbot/
-    env_file:
-      - ./fashion_shopping_chatbot/.env
-    restart: always
-    command: run actions
+  # rasa_actions:
+  #   build:
+  #     context: ./fashion_shopping_chatbot
+  #   volumes:
+  #     - ./fashion_shopping_chatbot/:/app/chatbot/
+  #   env_file:
+  #     - ./fashion_shopping_chatbot/.env
+  #   restart: always
+  #   command: run actions
 
   db:
     image: postgres:15.1
@@ -92,9 +114,10 @@ services:
       - media:/media/
     ports:
       - 8000:8000
-      - 5005:5005
+      - 8001:8001
     depends_on:
       - web
+      - web_ws
 
   redis:
     image: redis:7.0
