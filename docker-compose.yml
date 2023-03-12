@@ -110,23 +110,23 @@ services:
     ports:
       - 5432:5432
 
-  proxy:
-    image: nginx:1.23
-    build:
-      context: ./nginx
-    volumes:
-      - static:/static/
-      - media:/media/
-    ports:
-      - 8000:8000
-      - 8001:8001
-    depends_on:
-      - web
-      - web_ws
-
   redis:
     image: redis:7.0
 
+  nginx:
+    image: nginx:1.23
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      - ./certs/:/etc/letsencrypt/
+      - static:/static/
+      - media:/media/
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - web
+      - web_ws
+      
 volumes:
   static:
   media:
