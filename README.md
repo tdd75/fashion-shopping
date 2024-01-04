@@ -1,12 +1,12 @@
 # Fashion Shopping App
-- Boosts customer engagement with personalized product suggestions.
-- Provides functionalities: product search, online ordering, payment, image search, and chatbot integration.
-- Efficient management tools for orders, products, and customer data.
-- Technologies used: Django Rest Framework, Flutter, TensorFlow, Rasa, and Docker.
+- Enhances customer reach and offers tailored product recommendations.
+- Features include product search, online ordering, payment, image search, and a chatbot.
+- Management functionalities for orders, products, and customers.
+- Built with Django Rest Framework, Flutter, TensorFlow, Rasa, and Docker.
 
 ## Getting Started
-- To fetch all services: `python3 pull_service.py`
-- To initiate Docker setup: `docker compose up --build`
+- Pull all services: `python3 pull_service.py`
+- Run with Docker: `docker compose up --build`
 
 ## Demo
 - https://drive.google.com/file/d/1x-IrMOMnuQXQzGOL8GrZxvWE4hSrF9gP/view?usp=sharing
