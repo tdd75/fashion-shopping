@@ -2,7 +2,7 @@
 - Enhances customer reach and offers tailored product recommendations.
 - Features include product search, online ordering, payment, image search, and a chatbot.
 - Management functionalities for orders, products, and customers.
-- Built with Django Rest Framework, Flutter, TensorFlow, Rasa, and Docker.
+- Built with Django Rest Framework, Flutter, Nuxt, TensorFlow, Rasa, and Docker.
 
 ## Getting Started
 - Pull all services: `python3 pull_service.py`
